@@ -1,13 +1,16 @@
-// pages/auth/register.tsx
+// src/pages/auth/register.tsx
 import { useState } from 'react';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
@@ -15,53 +18,82 @@ const Register = () => {
       return;
     }
 
-    // Registration logic (you can integrate with your backend API here)
-    setError('');
-    alert('User registered successfully!');
+    try {
+      // Registration logic here
+      setError('');
+      alert('User registered successfully!');
+      router.push('/auth/login');
+    } catch (err) {
+      setError('Registration failed');
+    }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h1 className="text-2xl font-semibold text-center mb-6">Register</h1>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
+    <div className="min-h-screen bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 flex justify-center items-center">
+      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+        <h2 className="text-3xl font-semibold text-center text-gray-900 mb-6">Create your account</h2>
+
+        <p className="text-sm text-center text-gray-600 mb-6">
+          Or{' '}
+          <Link href="/auth/login" className="font-medium text-blue-600 hover:text-blue-500">
+            sign in to your existing account
+          </Link>
+        </p>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
             <input
+              id="username"
+              name="username"
               type="text"
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username"
-              required
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          <div className="mb-4">
+
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
             <input
+              id="password"
+              name="password"
               type="password"
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              required
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          <div className="mb-6">
+
+          <div>
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirm Password</label>
             <input
+              id="confirmPassword"
+              name="confirmPassword"
               type="password"
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm Password"
-              required
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
-          <button
-            type="submit"
-            className="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-300"
-          >
-            Register
-          </button>
+
+          {error && (
+            <div className="p-4 bg-red-50 border border-red-300 text-red-700 rounded-md">
+              {error}
+            </div>
+          )}
+
+          <div>
+            <button
+              type="submit"
+              className="w-full py-2 px-4 bg-blue-600 text-white font-medium rounded-md shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Register
+            </button>
+          </div>
         </form>
       </div>
     </div>

@@ -2,6 +2,7 @@
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -57,6 +58,18 @@ const Login = () => {
             Login
           </button>
         </form>
+
+        {/* Create Account Link */}
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-600">
+            Don’t have an account?{' '}
+            <Link href="/auth/register">
+              <span className="text-blue-600 hover:text-blue-500 cursor-pointer">
+                Create an account
+              </span>
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

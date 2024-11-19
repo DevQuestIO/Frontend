@@ -10,6 +10,7 @@ declare module "next-auth" {
       name?: string | null;
       email?: string | null;
       image?: string | null;
+      roles?: string[];  // Add 'roles' here as an array of strings
     };
   }
 }
@@ -18,5 +19,6 @@ declare module "next-auth/jwt" {
   interface JWT {
     accessToken?: string;
     idToken?: string;
+    roles?: string[]; // Add 'roles' here as well if you need it in JWT
   }
 }
