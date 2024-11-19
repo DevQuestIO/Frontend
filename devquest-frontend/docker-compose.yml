@@ -1,0 +1,40 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    environment:
+      - KEYCLOAK_ADMIN=admin           # Changed from KEYCLOAK_USER
+      - KEYCLOAK_ADMIN_PASSWORD=admin  # Changed from KEYCLOAK_PASSWORD
+      # Remove these as they're deprecated in newer versions
+      # - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      # - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+      - KC_DB=dev-file                 # Use file-based storage instead of H2
+    ports:
+      - "8080:8080"
+    volumes:
+      - keycloak_data:/opt/keycloak/data  # Updated path for newer Keycloak versions
+    command: start-dev
+    networks:
+      - app-network
+
+  crdb:
+    image: cockroachdb/cockroach:latest
+    container_name: crdb_devquest
+    ports:
+      - "26257:26257"
+      - "8081:8080"
+    command: start-single-node --insecure
+    volumes:
+      - crdb-data:/cockroach/cockroach-data
+    networks:
+      - app-network
+
+volumes:
+  keycloak_data:    # Define volume for Keycloak data
+    name: keycloak_data  # Named volume for easier management
+  crdb-data:
+    name: crdb_data
+
+networks:
+  app-network:
+    driver: bridge
