@@ -17,28 +17,102 @@ import ContributionHeatmap from '@/components/dashboard/ContributionHeatMap';
 // import StreakStats from '@/components/dashboard/StreakStats';
 import { Code2, Award, Target, Flame } from 'lucide-react';
 
+
 export default function Dashboard() {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const initializeSync = async () => {
+    try {
+      setLoading(true);
+      
+      // Start the sync process
+      const API_BASE_URL = 'http://127.0.0.1:8000/api/v1/sync';
+      // fetch(`${API_BASE_URL}/stats/${userId}`);
+      const response = await fetch(`http://127.0.0.1:8000/api/v1/sync/pbajaj0023?username=pbajaj0023`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'foo': 'LEETCODE_SESSION=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfYXV0aF91c2VyX2lkIjoiMzc0MzU3NiIsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImFsbGF1dGguYWNjb3VudC5hdXRoX2JhY2tlbmRzLkF1dGhlbnRpY2F0aW9uQmFja2VuZCIsIl9hdXRoX3VzZXJfaGFzaCI6IjEzZGMxY2M0MDg1Y2VlMzUwZGZiOWMzYzZmYWQ2ZTVmNzhmZGYyNzExNDI4MWRmNzE5YzAzM2E2ZjE5MTlkZjgiLCJpZCI6Mzc0MzU3NiwiZW1haWwiOiJwYmFqYWowMDIzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoicGJhamFqMDAyMyIsInVzZXJfc2x1ZyI6InBiYWphajAwMjMiLCJhdmF0YXIiOiJodHRwczovL2Fzc2V0cy5sZWV0Y29kZS5jb20vdXNlcnMvcGJhamFqMDAyMy9hdmF0YXJfMTYwOTU4OTAyMC5wbmciLCJyZWZyZXNoZWRfYXQiOjE3MzE2NTU4MTQsImlwIjoiMjYwMTo2NDY6ODAwMDo2YmIwOmY4NWM6ODhmOTo3MTZlOmRjNmQiLCJpZGVudGl0eSI6ImE0NTVlYmM2N2QwYjUwMDdlMmEwNTU0MTRkZDE0ZDc4IiwiZGV2aWNlX3dpdGhfaXAiOlsiNmYwNjk3NjIyZmVmYTUzN2JiMTQwNTY5MzA1ZmU0Y2MiLCIyNjAxOjY0Njo4MDAwOjZiYjA6Zjg1Yzo4OGY5OjcxNmU6ZGM2ZCJdLCJzZXNzaW9uX2lkIjoyMDEzMTksIl9zZXNzaW9uX2V4cGlyeSI6MTIwOTYwMH0.HP-J9U1-GB1QUWsVTs9wpS5E0l2xk6ROxcP0YjxXjN4;',
+          'x-csrftoken': '8sB8s1cBW6WCBRH3UV5NYyJR9Ba6sMqzyXrLBFJwuIUGNYFZlxeOcjLZ1CnQPL0W'
+        },
+        credentials: 'include'
+      });
+      
+      if (!response.ok) throw new Error('Failed to start sync');
+      
+      const { task_id, stats } = await response.json();
+      if(stats) {
+        setStats(stats);
+        setLoading(false);
+        return;
+      }
+      console.log('Sync task started:', task_id);
+      
+      // Initialize SSE connection
+      const eventSource = new EventSource(
+        `${API_BASE_URL}/pbajaj0023/stream/${task_id}`
+      );
+      
+      // Listen for events
+      eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log('Received update:', data);
+      };
+      
+      eventSource.addEventListener('complete', (event) => {
+        const data = JSON.parse(event.data);
+        setStats(data.stats);
+        setLoading(false);
+        eventSource.close();
+      });
+      
+      eventSource.addEventListener('error', (event) => {
+        // const data = JSON.parse(event.data);
+        setError("Failed to sync data");
+        setLoading(false);
+        eventSource.close();
+      });
+      
+      // Clean up on component unmount
+      return () => {
+        eventSource.close();
+      };
+      
+    } catch (error) {
+      setError("Failed to sync data");
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function loadStats() {
-      try {
-        const data = await fetchUserStats('pbajaj0023');
-        setStats(data);
-      } catch (error) {
-        console.error('Error loading stats:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadStats();
+    // async function loadStats() {
+    //   try {
+        // const data = await fetchUserStats('pbajaj0023');
+    //     setStats(data);
+    //   } catch (error) {
+    //     console.error('Error loading stats:', error);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // }
+    // loadStats();
+    initializeSync();
   }, []);
 
   if (loading || !stats) {
     return (
       <div className="flex h-screen items-center justify-center bg-slate-950">
         <div className="h-12 w-12 animate-spin rounded-full border-4 border-t-primary"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-red-500">
+        Error: {error}
       </div>
     );
   }

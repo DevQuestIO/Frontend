@@ -38,15 +38,20 @@ const ContributionHeatmap = ({ submissions_by_date }: ContributionHeatmapProps) 
     const monthLabels: { month: string; startIndex: number; endIndex: number }[] = [];
     
     let currentDate = new Date(oneYearAgo);
+  // currentDate.setDate(currentDate.getDate() + 1); // Subtract 1 day
+
     let lastMonth = -1;
     let weekIndex = 0;
     let monthStartIndex = 0;
+    let cnt = 0;
 
     while (currentDate <= today) {
-      const dayOfWeek = currentDate.getDay();
+      let dayOfWeek = currentDate.getDay();
+      // dayOfWeek = dayOfWeek%7;
       const currentMonth = currentDate.getMonth();
-      const dateStr = currentDate.toISOString().split('T')[0];
+      const dateStr = currentDate.toLocaleDateString('en-CA');
       const count = submissions_by_date[dateStr] || 0;
+      // console.log(dayOfWeek, currentMonth, dateStr, count);
 
       // Track month changes and add gaps
       if (currentMonth !== lastMonth) {
@@ -79,7 +84,14 @@ const ContributionHeatmap = ({ submissions_by_date }: ContributionHeatmapProps) 
       });
 
       currentDate.setDate(currentDate.getDate() + 1);
-      if (dayOfWeek === 6) weekIndex++;
+      cnt++;
+      if (dayOfWeek === 6) {
+        weekIndex++;
+        for(let k = 0; k < (7 - cnt); k++) {
+          calendarData[k].push(null);
+        }
+        cnt = 0;
+      }
     }
 
     // Add the last month
@@ -88,6 +100,8 @@ const ContributionHeatmap = ({ submissions_by_date }: ContributionHeatmapProps) 
       startIndex: monthStartIndex,
       endIndex: weekIndex
     });
+
+    // console.log({ calendarData, maxSubmissions, totalSubmissions, monthLabels });
 
     return { calendarData, maxSubmissions, totalSubmissions, monthLabels };
   }, [submissions_by_date]);
@@ -130,25 +144,6 @@ const ContributionHeatmap = ({ submissions_by_date }: ContributionHeatmapProps) 
 
       Calendar Grid
       <div className="relative">
-        {/* Month Labels
-        <div className="flex ml-14 mb-2">
-          {monthLabels.map(({ month, startIndex, endIndex }, i) => {
-            // Calculate the center position of each month's data
-            const centerPosition = startIndex + Math.floor((endIndex - startIndex) / 2);
-            return (
-              <div
-                key={`${month}-${i}`}
-                className="text-xs text-slate-400 absolute"
-                style={{
-                  left: `${centerPosition * 20}px`,
-                  transform: 'translateX(-50%)'
-                }}
-              >
-                {month}
-              </div>
-            );
-          })}
-        </div> */}
 
         <div className="flex">
           {/* Day Labels */}
