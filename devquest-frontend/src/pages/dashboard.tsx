@@ -28,13 +28,17 @@ export default function Dashboard() {
       setLoading(true);
       
       // Start the sync process
-      const API_BASE_URL = 'http://127.0.0.1:8000/api/v1/sync';
+      // const API_BASE_URL = 'http://127.0.0.1:8000/api/v1/sync';
+//       PDF_SERVICE_URL = os.getenv("PDF_SERVICE_URL", "http://127.0.0.1:1234/analyze")
+// DOC_SERVICE_URL = os.getenv("DOC_SERVICE_URL", "http://127.0.0.1:1235/analyze")
       // fetch(`${API_BASE_URL}/stats/${userId}`);
-      const response = await fetch(`http://127.0.0.1:8000/api/v1/sync/pbajaj0023?username=pbajaj0023`, {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_IS_KUBERNETES_ENV == "true" ? `` : 'http://127.0.0.1:8000';
+      console.log(API_BASE_URL, 'API_BASE_URLLL');
+      const response = await fetch(`${API_BASE_URL}/api/v1/sync/pbajaj0023?username=pbajaj0023`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'foo': 'LEETCODE_SESSION=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfYXV0aF91c2VyX2lkIjoiMzc0MzU3NiIsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImFsbGF1dGguYWNjb3VudC5hdXRoX2JhY2tlbmRzLkF1dGhlbnRpY2F0aW9uQmFja2VuZCIsIl9hdXRoX3VzZXJfaGFzaCI6IjEzZGMxY2M0MDg1Y2VlMzUwZGZiOWMzYzZmYWQ2ZTVmNzhmZGYyNzExNDI4MWRmNzE5YzAzM2E2ZjE5MTlkZjgiLCJpZCI6Mzc0MzU3NiwiZW1haWwiOiJwYmFqYWowMDIzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoicGJhamFqMDAyMyIsInVzZXJfc2x1ZyI6InBiYWphajAwMjMiLCJhdmF0YXIiOiJodHRwczovL2Fzc2V0cy5sZWV0Y29kZS5jb20vdXNlcnMvcGJhamFqMDAyMy9hdmF0YXJfMTYwOTU4OTAyMC5wbmciLCJyZWZyZXNoZWRfYXQiOjE3MzE2NTU4MTQsImlwIjoiMjYwMTo2NDY6ODAwMDo2YmIwOmY4NWM6ODhmOTo3MTZlOmRjNmQiLCJpZGVudGl0eSI6ImE0NTVlYmM2N2QwYjUwMDdlMmEwNTU0MTRkZDE0ZDc4IiwiZGV2aWNlX3dpdGhfaXAiOlsiNmYwNjk3NjIyZmVmYTUzN2JiMTQwNTY5MzA1ZmU0Y2MiLCIyNjAxOjY0Njo4MDAwOjZiYjA6Zjg1Yzo4OGY5OjcxNmU6ZGM2ZCJdLCJzZXNzaW9uX2lkIjoyMDEzMTksIl9zZXNzaW9uX2V4cGlyeSI6MTIwOTYwMH0.HP-J9U1-GB1QUWsVTs9wpS5E0l2xk6ROxcP0YjxXjN4;',
+          'foo': 'LEETCODE_SESSION=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfYXV0aF91c2VyX2lkIjoiMzc0MzU3NiIsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImFsbGF1dGguYWNjb3VudC5hdXRoX2JhY2tlbmRzLkF1dGhlbnRpY2F0aW9uQmFja2VuZCIsIl9hdXRoX3VzZXJfaGFzaCI6IjEzZGMxY2M0MDg1Y2VlMzUwZGZiOWMzYzZmYWQ2ZTVmNzhmZGYyNzExNDI4MWRmNzE5YzAzM2E2ZjE5MTlkZjgiLCJpZCI6Mzc0MzU3NiwiZW1haWwiOiJwYmFqYWowMDIzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoicGJhamFqMDAyMyIsInVzZXJfc2x1ZyI6InBiYWphajAwMjMiLCJhdmF0YXIiOiJodHRwczovL2Fzc2V0cy5sZWV0Y29kZS5jb20vdXNlcnMvcGJhamFqMDAyMy9hdmF0YXJfMTYwOTU4OTAyMC5wbmciLCJyZWZyZXNoZWRfYXQiOjE3MzIzNDg1NjIsImlwIjoiMjYwMTo2NDY6ODAwMDo2YmIwOjkwMTI6ZDM2Yjo3NTM4OjliZjgiLCJpZGVudGl0eSI6IjA4NDViMzA5YzdiOWI5NTdhZmQ5ZWNmNzc1YTRjMjFmIiwiZGV2aWNlX3dpdGhfaXAiOlsiYzY5NjFiNWQ1NWE4YThkNGNjZDhkNTYxNzRlOWZlNzIiLCIyNjAxOjY0Njo4MDAwOjZiYjA6OTAxMjpkMzZiOjc1Mzg6OWJmOCJdLCJzZXNzaW9uX2lkIjoxNTA4NzU3LCJfc2Vzc2lvbl9leHBpcnkiOjEyMDk2MDB9.JLTTjVYcWBD9bWoGN0WYu8MqCnfbinNJzO0XhEbt__4;',
           'x-csrftoken': '8sB8s1cBW6WCBRH3UV5NYyJR9Ba6sMqzyXrLBFJwuIUGNYFZlxeOcjLZ1CnQPL0W'
         },
         credentials: 'include'
@@ -52,7 +56,7 @@ export default function Dashboard() {
       
       // Initialize SSE connection
       const eventSource = new EventSource(
-        `${API_BASE_URL}/pbajaj0023/stream/${task_id}`
+        `${API_BASE_URL}/api/v1/sync/pbajaj0023/stream/${task_id}`
       );
       
       // Listen for events
