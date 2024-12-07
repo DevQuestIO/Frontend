@@ -55,3 +55,18 @@ export interface UserStats {
   };
   calendar_stats: CalendarStats;
 }
+
+export interface UserSession {
+  name: string,
+  given_name: string,
+  family_name: string,
+  sub: string,
+  email: string,
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    roles?: string[];
+  };
+  accessToken: string; // Include additional properties like tokens if needed
+}

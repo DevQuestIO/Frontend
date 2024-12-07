@@ -1,37 +1,128 @@
-// src/pages/index.tsx
-import { useSession, signIn, signOut } from "next-auth/react";
+import { signIn, signOut } from "next-auth/react";
+import {useSession} from "../hooks/useSession";
 import Link from "next/link";
 
+// const Navbar = () => {
+//   const {session, status } = useSession();
+//   console.log(session);
+//   console.log(status);
+//   return (
+//     <header className="bg-blue-600 fixed top-0 w-full z-50 shadow-md">
+//       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+//         <div className="relative flex items-center justify-between h-16">
+//           {/* Logo/Brand Name */}
+//           <div className="flex-shrink-0 text-white text-2xl font-bold">DevQuest</div>
+
+//           {/* Navigation Links */}
+//           <div className="flex items-center space-x-4">
+//             {/* Always show About Us */}
+//             <Link href="/about">
+//               <span className="text-white hover:bg-blue-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+//                 About Us
+//               </span>
+//             </Link>
+
+//             {/* Conditionally render Login/Logout */}
+//             {status === "loading" ? null : session ? (
+//               <>
+//                 <span className="text-white px-3 py-2 rounded-md text-sm font-medium">
+//                   Hi, {session.given_name || "User"}
+//                 </span>
+//                 <button
+//                   onClick={() => signOut()}
+//                   className="text-white hover:bg-red-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+//                 >
+//                   Sign Out
+//                 </button>
+//               </>
+//             ) : (
+//               <>
+//                 <Link href="/auth/login">
+//                   <span className="text-white hover:bg-blue-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+//                     Login
+//                   </span>
+//                 </Link>
+//                 <Link href="/auth/register">
+//                   <span className="text-white hover:bg-blue-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+//                     Signup
+//                   </span>
+//                 </Link>
+//               </>
+//             )}
+//           </div>
+//         </div>
+//       </nav>
+//     </header>
+//   );
+// };
 const Navbar = () => {
+  const { session, status } = useSession();
+
+  const handleSignOut = async () => {
+    try {
+      const res = await fetch('http://localhost:5002/api/auth/signout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (res.ok) {
+        // Optionally, you can clear local state or redirect to the login page
+        window.location.href = '/auth/login'; // Redirect to login after signout
+      } else {
+        console.error('Signout failed:', await res.text());
+      }
+    } catch (error) {
+      console.error('Error during signout:', error);
+    }
+  };
+
   return (
     <header className="bg-blue-600 fixed top-0 w-full z-50 shadow-md">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative flex items-center justify-between h-16">
-          {/* Logo/Brand Name */}
           <div className="flex-shrink-0 text-white text-2xl font-bold">DevQuest</div>
-
-          {/* Navigation Links */}
           <div className="flex items-center space-x-4">
-            {/* About Us */}
             <Link href="/about">
               <span className="text-white hover:bg-blue-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                 About Us
               </span>
             </Link>
+            {status === 'loading' ? null : session ? (
+              <>
+                <span className="text-white px-3 py-2 rounded-md text-sm font-medium">
+                  Hi, {session.given_name || 'User'}
+                </span>
+                <button
+  onClick={async () => {
+    await fetch('http://localhost:5002/api/auth/signout', { method: 'POST', credentials: 'include' });
+    signOut(); // This ensures NextAuth session is cleared too
+  }}
+  className="text-white hover:bg-red-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+>
+  Sign Out
+</button>
 
-            {/* Login */}
-            <Link href="/auth/login">
-              <span className="text-white hover:bg-blue-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                Login
-              </span>
-            </Link>
-
-            {/* Signup */}
-            <Link href="/auth/register">
-              <span className="text-white hover:bg-blue-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                Signup
-              </span>
-            </Link>
+                {/* <button
+                  onClick={handleSignOut}
+                  className="text-white hover:bg-red-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Sign Out
+                </button> */}
+              </>
+            ) : (
+              <>
+                <Link href="/auth/login">
+                  <span className="text-white hover:bg-blue-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                    Login
+                  </span>
+                </Link>
+                <Link href="/auth/register">
+                  <span className="text-white hover:bg-blue-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                    Signup
+                  </span>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -39,8 +130,9 @@ const Navbar = () => {
   );
 };
 
+
 export default function HomePage() {
-  const { data: session, status } = useSession();
+  const {session, status } = useSession();
 
   if (status === "loading") {
     return (
@@ -62,20 +154,12 @@ export default function HomePage() {
               </h1>
               <p className="mt-2 text-center text-gray-600">Please sign in to continue</p>
             </div>
-            <div>
-              <button
-                onClick={() => signIn("keycloak")}
-                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out"
-              >
-                Sign in with Keycloak
-              </button>
-            </div>
           </div>
         ) : (
           <div className="w-full max-w-md space-y-8">
             <div>
               <h1 className="text-4xl font-bold text-center text-gray-900">
-                Welcome back, {session.user?.name}!
+                Welcome back, {session.name}!
               </h1>
               <p className="mt-2 text-center text-gray-600">Your Profile</p>
             </div>
@@ -83,22 +167,10 @@ export default function HomePage() {
             <div className="bg-white shadow rounded-lg p-6">
               <div className="space-y-4">
                 <p className="text-gray-600">
-                  <span className="font-medium">Email:</span> {session.user?.email}
+                  <span className="font-medium">Email:</span> {session.email}
                 </p>
-                {session.user?.roles && (
-                  <p className="text-gray-600">
-                    <span className="font-medium">Roles:</span> {session.user?.roles.join(", ")}
-                  </p>
-                )}
               </div>
             </div>
-
-            <button
-              onClick={() => signOut()}
-              className="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out"
-            >
-              Sign Out
-            </button>
           </div>
         )}
       </div>
