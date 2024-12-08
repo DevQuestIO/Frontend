@@ -271,72 +271,83 @@ const UserList = ({ currentUser, onSelectUser, socket, selectedUser }: Props) =>
         </button>
       </div>
   
-      {/* Pending Requests (conditionally displayed based on activeTab) */}
-      {activeTab === 'friends' && pendingRequests.length > 0 && (
-        <div className={styles.pendingRequests}>
-          <h3>Pending Requests ({pendingRequests.length})</h3>
-          {pendingRequests.map((user) => (
-            <div key={user._id} className={styles.requestItem}>
-              <div className={styles.requestInfo}>
-                <span className={styles.userName}>{user.username}</span>
-                <span className={styles.requestTime}>wants to connect</span>
-              </div>
-              <div className={styles.requestButtons}>
-                <button
-                  className={styles.acceptButton}
-                  onClick={() => acceptFriendRequest(user._id)}
-                >
-                  Accept
-                </button>
-                <button
-                  className={styles.rejectButton}
-                  onClick={() => rejectFriendRequest(user._id)}
-                >
-                  Reject
-                </button>
-              </div>
-            </div>
-          ))}
+      
+
+{pendingRequests.length > 0 && (
+  <div className="bg-gray-800 border border-gray-700 rounded-lg p-3 mb-2 shadow-lg">
+    <h3 className="text-lg font-bold text-gray-200 mb-2">
+      Pending Requests ({pendingRequests.length})
+    </h3>
+    {pendingRequests.map((user) => (
+      <div
+        key={user._id}
+        className="bg-gray-700 rounded-lg px-3 py-2  shadow-sm hover:bg-gray-600 transition-all"
+      >
+        <div className="text-sm font-medium text-gray-100 mb-2">
+          {user.username}
         </div>
-      )}
+        <div className="text-xs text-gray-400 mb-3">wants to connect</div>
+        <div className="flex items-center gap-4">
+          <button
+            className="px-4 py-2 bg-green-600 text-white text-sm  rounded-full shadow-md hover:bg-green-500 transition-all"
+            onClick={() => acceptFriendRequest(user._id)}
+          >
+            Accept
+          </button>
+          <button
+            className="px-4 py-2 bg-red-600 text-white text-sm rounded-full shadow-md hover:bg-red-500 transition-all"
+            onClick={() => rejectFriendRequest(user._id)}
+          >
+            Reject
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
+
+
 
       {/* User List */}
       <div className={styles.userList}>
-        {filteredUsers().map((user) => (
-          <div
-            key={user._id}
-            className={`${styles.userItem} ${
-              selectedUser?._id === user._id ? styles.active : ''
-            }`}
-          >
-            <div
-              className={`${styles.userStatus} ${
-                !user.isActive ? styles.offline : styles.online
-              }`}
-            />
-            <div className={styles.userName}>{user.username}</div>
-            {activeTab === 'all' && (
-              <button
-                className={`${styles.connectButton} ${
-                  user.requestSent ? styles.sent : ''
-                }`}
-                onClick={() => handleConnect(user._id)}
-                disabled={user.requestSent}
-              >
-                {user.requestSent ? 'Sent' : 'Connect'}
-              </button>
-            )}
-            {activeTab === 'friends' && (
-              <button
-                className={styles.chatButton}
-                onClick={() => onSelectUser(user)}
-              >
-                Chat
-              </button>
-            )}
-          </div>
-        ))}
+  {filteredUsers().map((user) => (
+    <div
+      key={user._id}
+      className={`${styles.userItem} ${
+        selectedUser?._id === user._id ? styles.active : ''
+      }`}
+    >
+      {/* Grouping userStatus and userName on the left */}
+      <div className={styles.userDetails}>
+        <div
+          className={`${styles.userStatus} ${
+            !user.isActive ? styles.offline : styles.online
+          }`}
+        />
+        <div className={styles.userName}>{user.username}</div>
       </div>
+
+      {/* Conditional rendering for Connect and Chat buttons */}
+      {activeTab === 'all' && (
+        <button
+          className={`${styles.connectButton} ${
+            user.requestSent ? styles.sent : ''
+          }`}
+          onClick={() => handleConnect(user._id)}
+          disabled={user.requestSent}
+        >
+          {user.requestSent ? 'Sent' : 'Connect'}
+        </button>
+      )}
+      {activeTab === 'friends' && (
+        <button className={styles.chatButton} onClick={() => onSelectUser(user)}>
+          Chat
+        </button>
+      )}
+    </div>
+  ))}
+</div>
+
     </div>
   );
 };
