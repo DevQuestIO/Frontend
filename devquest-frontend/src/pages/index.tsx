@@ -1,10 +1,7 @@
-
-
-
-
 import { signIn, signOut } from "next-auth/react";
 import { useSession } from "../hooks/useSession";
 import Link from "next/link";
+import React from "react";
 const handleSSOLogin = () => {
   window.location.href =
     "http://localhost:8080/realms/devquest/protocol/openid-connect/auth?" +
@@ -117,13 +114,6 @@ const HomePage = () => {
                 <img
                   src="/images/leetcode.png"
                   alt="LeetCode"
-                  className="w-10 h-10"
-                />
-              </div>
-              <div className="w-16 h-16 bg-gray-700 rounded-lg flex items-center justify-center shadow">
-                <img
-                  src="/images/platform2.png"
-                  alt="Platform Logo"
                   className="w-10 h-10"
                 />
               </div>
