@@ -11,7 +11,7 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5002/api/auth/login', {  // API endpoint in the backend repo
+      const res = await fetch('http://localhost:5002/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
@@ -29,6 +29,14 @@ const Login = () => {
     }
   };
 
+  const handleSSOLogin = () => {
+    window.location.href = 'http://localhost:8080/realms/devquest/protocol/openid-connect/auth?' +
+      'client_id=devquest-frontend&' +
+      'response_type=code&' +
+      'redirect_uri=http://localhost:5002/api/auth/callback';
+  };
+  
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex justify-center items-center">
       <div className="w-full max-w-md bg-gray-800 p-8 rounded-lg shadow-lg">
@@ -37,7 +45,9 @@ const Login = () => {
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-200">Username</label>
+            <label htmlFor="username" className="block text-sm font-medium text-gray-200">
+              Username
+            </label>
             <input
               id="username"
               name="username"
@@ -50,7 +60,9 @@ const Login = () => {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-200">Password</label>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-200">
+              Password
+            </label>
             <input
               id="password"
               name="password"
@@ -79,9 +91,24 @@ const Login = () => {
           </div>
         </form>
 
+        {/* Login with Google */}
+        <div className="mt-4">
+          <button
+            className="w-full py-2 px-4 bg-red-600 text-white font-medium rounded-md shadow-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            onClick={handleSSOLogin}
+          >
+            Login with Google
+          </button>
+        </div>
+
         {/* Link to registration page */}
         <div className="mt-4 text-center text-sm text-gray-300">
-          <p>Don’t have an account? <Link href="/auth/register" className="text-blue-600 hover:text-blue-500">Create an account</Link></p>
+          <p>
+            Don’t have an account?{' '}
+            <Link href="/auth/register" className="text-blue-600 hover:text-blue-500">
+              Create an account
+            </Link>
+          </p>
         </div>
       </div>
     </div>
