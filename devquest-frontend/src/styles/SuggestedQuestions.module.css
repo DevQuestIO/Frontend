@@ -1,0 +1,89 @@
+/* Container for the suggested questions */
+.suggestedQuestionsContainer {
+    position: fixed;
+    bottom: 0;
+    right: 1rem;
+    width: 300px;
+    background-color: #ffffff;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    transform: translateY(90%);
+  }
+  
+  .suggestedQuestionsContainer.expanded {
+    transform: translateY(0);
+  }
+  
+  /* Header bar for the suggested questions */
+  .suggestedQuestionsHeader {
+    padding: 1rem;
+    background-color: #0073b1; /* LinkedIn blue */
+    color: white;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+  
+  .suggestedQuestionsHeader:hover {
+    background-color: #005582; /* Darker LinkedIn blue */
+  }
+  
+  /* List of suggested questions */
+  .suggestedQuestionsList {
+    padding: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+  }
+  
+  /* Individual question item */
+  .questionItem {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+  }
+  
+  .questionItem:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .questionTitle {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .questionDifficulty {
+    font-size: 0.9rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    text-transform: capitalize;
+  }
+  
+  /* Difficulty-specific styles */
+  .questionDifficulty.easy {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .questionDifficulty.medium {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+  
+  .questionDifficulty.hard {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+  
+  /* Toggle button styles */
+  .toggleIcon {
+    font-size: 1.2rem;
+  }
+  

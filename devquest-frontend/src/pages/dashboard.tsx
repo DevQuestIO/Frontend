@@ -2,21 +2,22 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { fetchUserStats } from 'lib/api';
-import { UserStats } from '@/types/index';
-import Navbar from '@/components/layout/Navbar';
-import Sidebar from '@/components/layout/Sidebar';
-import StatsCard from '@/components/dashboard/StatsCard';
-import LanguageDistribution from '@/components/dashboard/LanguageDistribution';
-import TopicDistribution from '@/components/dashboard/TopicDistribution';
-import DifficultyChart from '@/components/dashboard/DifficultyChart';
-import ActivityCalendar from '@/components/dashboard/ActivityCalendar';
-import SubmissionTrends from '@/components/dashboard/SubmissionTrends';
-import TopicsBreakdown from '@/components/dashboard/TopicsBreakdown';
-import ContributionHeatmap from '@/components/dashboard/ContributionHeatMap';
+import { fetchUserStats } from '../../lib/api';
+import { UserStats } from '../types/index';
+import Navbar from '../components/layout/Navbar';
+import Sidebar from '../components/layout/Sidebar';
+import StatsCard from '../components/dashboard/StatsCard';
+import LanguageDistribution from '../components/dashboard/LanguageDistribution';
+import TopicDistribution from '../components/dashboard/TopicDistribution';
+import DifficultyChart from '../components/dashboard/DifficultyChart';
+import ActivityCalendar from '../components/dashboard/ActivityCalendar';
+import SubmissionTrends from '../components/dashboard/SubmissionTrends';
+import TopicsBreakdown from '../components/dashboard/TopicsBreakdown';
+import ContributionHeatmap from '../components/dashboard/ContributionHeatMap';
 // import StreakStats from '@/components/dashboard/StreakStats';
 import { Code2, Award, Target, Flame } from 'lucide-react';
-
+import React from 'react';
+import SuggestedQuestions from '../components/dashboard/SuggestedQuestions';
 
 export default function Dashboard() {
   const [stats, setStats] = useState<UserStats | null>(null);
@@ -130,6 +131,7 @@ export default function Dashboard() {
           <div className="mx-auto max-w-7xl">
             <h1 className="mb-8 text-3xl font-bold text-white">Coding Progress Dashboard</h1>
             
+            <SuggestedQuestions/>
             {/* Stats Grid */}
             <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               <StatsCard
