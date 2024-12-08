@@ -245,7 +245,7 @@ const UserList = ({ currentUser, onSelectUser, socket, selectedUser }: Props) =>
             <div key={index} className={styles.notification}>
               <span>{notification.message}</span>
               <button
-                className={styles.closeButton}
+                className={styles.closeIcon}
                 onClick={() => removeNotification(index)}
               >
                 ✖

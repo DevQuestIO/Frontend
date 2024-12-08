@@ -1,89 +1,62 @@
-/* Container for the suggested questions */
-.suggestedQuestionsContainer {
-    position: fixed;
-    bottom: 0;
-    right: 1rem;
-    width: 300px;
-    background-color: #ffffff;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px 8px 0 0;
-    overflow: hidden;
-    transition: transform 0.3s ease;
-    transform: translateY(90%);
+/* Wrapper for the entire suggested questions drop-up box */
+.suggestedQuestionsWrapper {
+    @apply fixed bottom-0 right-4 w-80 bg-card shadow-lg rounded-t-lg z-50;
   }
   
-  .suggestedQuestionsContainer.expanded {
-    transform: translateY(0);
-  }
-  
-  /* Header bar for the suggested questions */
+  /* Header: Always visible at the bottom */
   .suggestedQuestionsHeader {
-    padding: 1rem;
-    background-color: #0073b1; /* LinkedIn blue */
-    color: white;
-    font-weight: bold;
-    display: flex;
-    justify-content: space-between;
-    cursor: pointer;
+    @apply flex justify-between items-center p-4 bg-primary text-primary-foreground cursor-pointer rounded-t-lg;
+    transition: background-color 0.3s ease;
   }
   
   .suggestedQuestionsHeader:hover {
-    background-color: #005582; /* Darker LinkedIn blue */
+    @apply bg-primary/90; /* Slightly darker on hover */
+  }
+  
+  /* Container for the sliding list */
+  .suggestedQuestionsContainer {
+    @apply bg-card overflow-hidden transition-all ease-in-out duration-300;
+    max-height: 0; /* Collapsed by default */
+  }
+  
+  /* Expanded state for the list */
+  .suggestedQuestionsContainer.expanded {
+    max-height: 48rem; /* Adjust the maximum height of the expanded container */
   }
   
   /* List of suggested questions */
   .suggestedQuestionsList {
-    padding: 1rem;
-    max-height: 300px;
-    overflow-y: auto;
-    background-color: #f9f9f9;
+    @apply p-4 space-y-4 bg-muted text-muted-foreground max-h-96 overflow-y-auto;
   }
   
   /* Individual question item */
   .questionItem {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    padding: 0.5rem;
-    background-color: white;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-  }
-  
-  .questionItem:hover {
-    background-color: #f0f0f0;
+    @apply flex justify-between items-center p-3 bg-card border border-border rounded-md shadow-sm hover:bg-muted/80;
   }
   
   .questionTitle {
-    font-weight: bold;
-    color: #333;
+    @apply font-semibold text-sm text-card-foreground;
   }
   
   .questionDifficulty {
-    font-size: 0.9rem;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    text-transform: capitalize;
+    @apply px-2 py-1 text-xs rounded-md capitalize;
   }
   
   /* Difficulty-specific styles */
   .questionDifficulty.easy {
-    background-color: #d4edda;
-    color: #155724;
+    @apply bg-green-100 text-green-700;
   }
   
   .questionDifficulty.medium {
-    background-color: #fff3cd;
-    color: #856404;
+    @apply bg-yellow-100 text-yellow-700;
   }
   
   .questionDifficulty.hard {
-    background-color: #f8d7da;
-    color: #721c24;
+    @apply bg-red-100 text-red-700;
   }
   
   /* Toggle button styles */
   .toggleIcon {
-    font-size: 1.2rem;
+    @apply text-xl text-primary-foreground;
   }
   

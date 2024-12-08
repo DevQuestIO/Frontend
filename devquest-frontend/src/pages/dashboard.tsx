@@ -131,7 +131,7 @@ export default function Dashboard() {
           <div className="mx-auto max-w-7xl">
             <h1 className="mb-8 text-3xl font-bold text-white">Coding Progress Dashboard</h1>
             
-            <SuggestedQuestions/>
+            <SuggestedQuestions/>   
             {/* Stats Grid */}
             <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               <StatsCard
