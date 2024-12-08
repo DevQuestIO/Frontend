@@ -32,7 +32,7 @@ const UserList = ({ currentUser, onSelectUser, socket, selectedUser }: Props) =>
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/users');
+      const response = await fetch('http://localhost:5003/api/users');
       const data = await response.json();
       setUsers(data.filter((user: User) => user._id !== currentUser?._id));
     } catch (error) {
@@ -67,7 +67,7 @@ const UserList = ({ currentUser, onSelectUser, socket, selectedUser }: Props) =>
   
       try {
         // Fetch the latest users directly
-        const response = await fetch('http://localhost:5001/api/users');
+        const response = await fetch('http://localhost:5003/api/users');
         const data = await response.json();
         const latestUsers = data.filter((user: User) => user._id !== currentUser?._id);
   
@@ -113,7 +113,7 @@ const UserList = ({ currentUser, onSelectUser, socket, selectedUser }: Props) =>
     const handleConnect = async (userId: string) => {
         if (!currentUser) return;
         try {
-          const response = await fetch('http://localhost:5001/api/friend-request', {
+          const response = await fetch('http://localhost:5003/api/friend-request', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -141,7 +141,7 @@ const UserList = ({ currentUser, onSelectUser, socket, selectedUser }: Props) =>
   const acceptFriendRequest = async (fromUserId: string) => {
     if (!currentUser) return;
     try {
-      const response = await fetch('http://localhost:5001/api/accept-friend', {
+      const response = await fetch('http://localhost:5003/api/accept-friend', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -178,7 +178,7 @@ const UserList = ({ currentUser, onSelectUser, socket, selectedUser }: Props) =>
   const rejectFriendRequest = async (fromUserId: string) => {
     if (!currentUser) return;
     try {
-      const response = await fetch('http://localhost:5001/api/reject-friend', {
+      const response = await fetch('http://localhost:5003/api/reject-friend', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

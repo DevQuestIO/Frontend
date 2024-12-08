@@ -82,7 +82,13 @@ body {
 }
 
 .sent {
-  @apply bg-gray-400 text-white cursor-not-allowed; /* Sent state */
+  @apply self-end bg-[#4f46e5] text-white;
+  margin-left: auto; /* Push to the right */
+}
+
+.received {
+  @apply self-start bg-[#2a2a2a] text-[#e5e5e5];
+  margin-right: auto; /* Push to the left */
 }
 
 .chatButton {
@@ -110,11 +116,6 @@ body {
   @apply max-w-[70%] px-4 py-3 rounded-xl text-sm shadow-md;
 }
 
-
-
-.received {
-  @apply self-start bg-[#2a2a2a] text-[#e5e5e5];
-}
 
 /* Input container for sending messages */
 .inputContainer {

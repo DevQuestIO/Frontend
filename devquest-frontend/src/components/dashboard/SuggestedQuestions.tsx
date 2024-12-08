@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "../../styles/SuggestedQuestions.module.css";
+import { useSession } from "../../hooks/useSession";
 
 // Define the type for a suggested question
 interface Question {
@@ -12,22 +13,31 @@ const SuggestedQuestions: React.FC = () => {
   const [suggestedQuestions, setSuggestedQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { session, status } = useSession();
 
-  // Fetch suggested questions from the backend
   useEffect(() => {
     const fetchQuestions = async () => {
+      if (status !== "authenticated" || !session?.preferred_username) {
+        return; // Wait for session to be ready
+      }
+
       setLoading(true);
       setError(null);
+
       try {
-        const response = await fetch("http://127.0.0.1:8001/api/v1/suggestions");
+        const response = await fetch(
+          `http://127.0.0.1:8001/api/v1/suggestions?username=${session.preferred_username}`
+        );
+
         if (!response.ok) {
-          const errorData = await response.text(); // Log backend error details
+          const errorData = await response.text();
           throw new Error(`Failed to fetch: ${response.statusText} - ${errorData}`);
         }
+
         const data: Question[] = await response.json();
         setSuggestedQuestions(data);
       } catch (err: any) {
-        console.error(err); // Log the error
+        console.error(err);
         setError(err.message || "An error occurred");
       } finally {
         setLoading(false);
@@ -35,7 +45,15 @@ const SuggestedQuestions: React.FC = () => {
     };
 
     fetchQuestions();
-  }, []);
+  }, [session?.preferred_username, status]);
+
+  if (status === "loading" || loading) {
+    return <div className={styles.loading}>Loading...</div>;
+  }
+
+  if (error) {
+    return <div className={styles.error}>{error}</div>;
+  }
 
   return (
     <div className={styles.suggestedQuestionsWrapper}>
@@ -56,22 +74,18 @@ const SuggestedQuestions: React.FC = () => {
       >
         {isExpanded && (
           <div className={styles.suggestedQuestionsList}>
-            {loading && <p>Loading...</p>}
-            {error && <p className={styles.error}>{error}</p>}
-            {!loading &&
-              !error &&
-              suggestedQuestions.map((question, index) => (
-                <div key={index} className={styles.questionItem}>
-                  <span className={styles.questionTitle}>{question.title}</span>
-                  <span
-                    className={`${styles.questionDifficulty} ${
-                      styles[question.difficulty.toLowerCase()]
-                    }`}
-                  >
-                    {question.difficulty}
-                  </span>
-                </div>
-              ))}
+            {suggestedQuestions.map((question, index) => (
+              <div key={index} className={styles.questionItem}>
+                <span className={styles.questionTitle}>{question.title}</span>
+                <span
+                  className={`${styles.questionDifficulty} ${
+                    styles[question.difficulty.toLowerCase()]
+                  }`}
+                >
+                  {question.difficulty}
+                </span>
+              </div>
+            ))}
           </div>
         )}
       </div>

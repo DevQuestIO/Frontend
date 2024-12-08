@@ -1,9 +1,9 @@
-// Chat.tsx
 import { useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
 import styles from '@/styles/Chat.module.css';
 import UserList from './UserList';
 import ChatWindow from './ChatWindow';
+import { useSession } from "../hooks/useSession";
 
 interface User {
   _id: string;
@@ -16,27 +16,22 @@ interface User {
 let socket: Socket;
 
 const Chat = () => {
+  const { session, status } = useSession();
   const [username, setUsername] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   useEffect(() => {
-    if (!username) {
-      const name = prompt('Please enter your username:');
-      if (name) {
-        setUsername(name);
-        handleLogin(name);
-      }
+    if (status === 'authenticated' && session?.name) {
+      setUsername(session.name);
+      handleLogin(session.name);
     }
-    return () => {
-      if (socket) socket.disconnect();
-    };
-  }, []);
+  }, [status, session]);
 
   const handleLogin = async (name: string) => {
     try {
-      const response = await fetch('http://localhost:5001/api/users/login', {
+      const response = await fetch('http://localhost:5003/api/users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,29 +44,37 @@ const Chat = () => {
         setCurrentUser(user);
         setIsLoggedIn(true);
         initializeSocket(user);
+      } else {
+        console.error('Failed to log in:', await response.text());
       }
     } catch (error) {
       console.error('Login error:', error);
     }
   };
 
-  // In Chat.tsx, update initializeSocket function
-const initializeSocket = (user: User) => {
-  socket = io('http://localhost:5001');
-    
-  socket.on('connect', () => {
-    console.log('Connected to socket');
-    socket.emit('join', user.username);
-  });
+  const initializeSocket = (user: User) => {
+    socket = io('http://localhost:5003');
 
-  // Add this to debug socket connection
-  socket.on('connect_error', (error) => {
-    console.error('Socket connection error:', error);
-  });
-};
+    socket.on('connect', () => {
+      console.log('Connected to socket');
+      socket.emit('join', user.username);
+    });
+
+    socket.on('connect_error', (error) => {
+      console.error('Socket connection error:', error);
+    });
+  };
+
+  if (status === 'loading') {
+    return <div className={styles.loginContainer}>Loading session...</div>;
+  }
+
+  if (status === 'unauthenticated') {
+    return <div className={styles.loginContainer}>Please log in to continue.</div>;
+  }
 
   if (!isLoggedIn) {
-    return <div className={styles.loginContainer}>Loading...</div>;
+    return <div className={styles.loginContainer}>Initializing...</div>;
   }
 
   return (
@@ -80,7 +83,7 @@ const initializeSocket = (user: User) => {
         currentUser={currentUser}
         onSelectUser={setSelectedUser}
         socket={socket}
-        selectedUser={selectedUser} 
+        selectedUser={selectedUser}
       />
       {selectedUser && (
         <ChatWindow
@@ -94,4 +97,3 @@ const initializeSocket = (user: User) => {
 };
 
 export default Chat;
-

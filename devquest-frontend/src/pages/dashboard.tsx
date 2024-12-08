@@ -13,8 +13,10 @@ import { Code2, Award, Target, Flame, CircleUserRound } from 'lucide-react';
 import ProfileSidebar from '../components/dashboard/ProfileSidebar';
 import SuggestedQuestions from '../components/dashboard/SuggestedQuestions';
 import React from 'react';
+import { useSession } from "../hooks/useSession";
 
 export default function Dashboard() {
+  const { session, status } = useSession();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,66 +24,84 @@ export default function Dashboard() {
 
   const initializeSync = async () => {
     try {
+      if (!session?.preferred_username) {
+        setError("User session not fully loaded or preferred_username is missing.");
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
-      const API_BASE_URL = process.env.NEXT_PUBLIC_IS_KUBERNETES_ENV == "true" ? `` : 'http://127.0.0.1:8000';
-      const response = await fetch(`${API_BASE_URL}/api/v1/sync/pbajaj0023?username=pbajaj0023`, {
-        method: 'POST',
+      const API_BASE_URL =
+        process.env.NEXT_PUBLIC_IS_KUBERNETES_ENV === "true"
+          ? ``
+          : "http://127.0.0.1:8000";
+
+      const syncUrl = `${API_BASE_URL}/api/v1/sync/${session.preferred_username}?username=${session.preferred_username}`;
+
+      const response = await fetch(syncUrl, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'foo': 'LEETCODE_SESSION=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfYXV0aF91c2VyX2lkIjoiMzc0MzU3NiIsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImFsbGF1dGguYWNjb3VudC5hdXRoX2JhY2tlbmRzLkF1dGhlbnRpY2F0aW9uQmFja2VuZCIsIl9hdXRoX3VzZXJfaGFzaCI6IjEzZGMxY2M0MDg1Y2VlMzUwZGZiOWMzYzZmYWQ2ZTVmNzhmZGYyNzExNDI4MWRmNzE5YzAzM2E2ZjE5MTlkZjgiLCJpZCI6Mzc0MzU3NiwiZW1haWwiOiJwYmFqYWowMDIzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoicGJhamFqMDAyMyIsInVzZXJfc2x1ZyI6InBiYWphajAwMjMiLCJhdmF0YXIiOiJodHRwczovL2Fzc2V0cy5sZWV0Y29kZS5jb20vdXNlcnMvcGJhamFqMDAyMy9hdmF0YXJfMTYwOTU4OTAyMC5wbmciLCJyZWZyZXNoZWRfYXQiOjE3MzIzNDg1NjIsImlwIjoiMjYwMTo2NDY6ODAwMDo2YmIwOjkwMTI6ZDM2Yjo3NTM4OjliZjgiLCJpZGVudGl0eSI6IjA4NDViMzA5YzdiOWI5NTdhZmQ5ZWNmNzc1YTRjMjFmIiwiZGV2aWNlX3dpdGhfaXAiOlsiYzY5NjFiNWQ1NWE4YThkNGNjZDhkNTYxNzRlOWZlNzIiLCIyNjAxOjY0Njo4MDAwOjZiYjA6OTAxMjpkMzZiOjc1Mzg6OWJmOCJdLCJzZXNzaW9uX2lkIjoxNTA4NzU3LCJfc2Vzc2lvbl9leHBpcnkiOjEyMDk2MDB9.JLTTjVYcWBD9bWoGN0WYu8MqCnfbinNJzO0XhEbt__4;',
-          'x-csrftoken': '8sB8s1cBW6WCBRH3UV5NYyJR9Ba6sMqzyXrLBFJwuIUGNYFZlxeOcjLZ1CnQPL0W'
+          "Content-Type": "application/json",
+          foo: "LEETCODE_SESSION=your-session-token",
+          "x-csrftoken": "your-csrf-token",
         },
-        credentials: 'include'
+        credentials: "include",
       });
-      if (!response.ok) throw new Error('Failed to start sync');
-      
+
+      if (!response.ok) {
+        throw new Error("Failed to start sync");
+      }
+
       const { task_id, stats } = await response.json();
-      if(stats) {
+
+      if (stats) {
         setStats(stats);
         setLoading(false);
         return;
       }
-      console.log('Sync task started:', task_id);
-      
-      // Initialize SSE connection
+
+      console.log("Sync task started:", task_id);
+
+      // Handle server-sent events (SSE) for sync updates
       const eventSource = new EventSource(
-        `${API_BASE_URL}/api/v1/sync/pbajaj0023/stream/${task_id}`
+        `${API_BASE_URL}/api/v1/sync/${session.preferred_username}/stream/${task_id}`
       );
-      
-      // Listen for events
+
       eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log('Received update:', data);
+        console.log("Received update:", data);
       };
-      
-      eventSource.addEventListener('complete', (event) => {
+
+      eventSource.addEventListener("complete", (event) => {
         const data = JSON.parse(event.data);
         setStats(data.stats);
         setLoading(false);
         eventSource.close();
       });
-      
-      eventSource.addEventListener('error', (event) => {
-        // const data = JSON.parse(event.data);
-        setError("Failed to sync data");
+
+      eventSource.addEventListener("error", (event) => {
+        setError("Error syncing data. Stream disconnected.");
         setLoading(false);
         eventSource.close();
       });
-      
-      // Clean up on component unmount
+
+      // Clean up SSE connection on unmount
       return () => {
         eventSource.close();
       };
-      
     } catch (error) {
-      setError("Failed to sync data");
+      console.error("Sync initialization failed:", error);
+      setError("Failed to sync data.");
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    initializeSync();
-  }, []);
+    // Wait for session to be loaded before initializing sync
+    if (status === "authenticated") {
+      initializeSync();
+    }
+  }, [status]);
 
   if (loading || !stats) {
     return (

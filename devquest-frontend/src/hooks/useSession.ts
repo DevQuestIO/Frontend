@@ -17,9 +17,10 @@ export const useSession = () => {
          });
 
          console.log('Response status:', res.status);
-
+         
          if (res.ok) {
            const data = await res.json();
+           console.log(data.user);
            setSession(data.user); // Use data.user from your backend response
            setStatus('authenticated');
          } else {

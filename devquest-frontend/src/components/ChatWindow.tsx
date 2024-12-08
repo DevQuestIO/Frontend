@@ -48,7 +48,7 @@ const ChatWindow = ({ currentUser, selectedUser, socket }: Props) => {
     if (!currentUser) return;
     try {
       const response = await fetch(
-        `http://localhost:5001/api/messages/${currentUser._id}/${selectedUser._id}`
+        `http://localhost:5003/api/messages/${currentUser._id}/${selectedUser._id}`
       );
       const data = await response.json();
       setMessages(data);

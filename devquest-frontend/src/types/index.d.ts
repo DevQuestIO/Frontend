@@ -62,6 +62,7 @@ export interface UserSession {
   family_name: string,
   sub: string,
   email: string,
+  preferred_username: string,
   user: {
     id: string;
     name: string;
