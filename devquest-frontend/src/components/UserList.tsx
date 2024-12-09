@@ -7,6 +7,7 @@ interface User {
   username: string;
   isActive: boolean;
   friends: string[];
+  pendingRequests: string[];
   pendingSentRequests: string[];
   pendingReceivedRequests: string[];
   requestSent?: boolean;
@@ -15,7 +16,7 @@ interface User {
 interface Props {
   currentUser: User | null;
   onSelectUser: (user: User) => void;
-  socket: Socket;
+  socket: typeof Socket;
   selectedUser: User | null;
 }
 
@@ -41,11 +42,11 @@ const UserList = ({ currentUser, onSelectUser, socket, selectedUser }: Props) =>
   };
 
   const setupSocketListeners = () => {
-    socket.on('notification', (notification) => {
+    socket.on('notification', (notification: any) => {
       setNotifications((prev) => [...prev, notification]);
     });
 
-    socket.on('userStatusChanged', ({ userId, isActive }) => {
+    socket.on('userStatusChanged', ({userId, isActive }:any) => {
       setUsers((prev) =>
         prev.map((user) =>
           user._id === userId ? { ...user, isActive } : user
@@ -60,7 +61,7 @@ const UserList = ({ currentUser, onSelectUser, socket, selectedUser }: Props) =>
       });
     });
 
-    socket.on('friendRequest', async ({ fromUserId, fromUsername }) => {
+    socket.on('friendRequest', async ({ fromUserId }: any) => {
       if (!currentUser || currentUser._id === fromUserId) return; // Skip if sender
   
       console.log('Before', pendingRequests);
@@ -72,7 +73,7 @@ const UserList = ({ currentUser, onSelectUser, socket, selectedUser }: Props) =>
         const latestUsers = data.filter((user: User) => user._id !== currentUser?._id);
   
         // Find the user who sent the request
-        const requestUser = latestUsers.find((user) => user._id === fromUserId);
+        const requestUser = latestUsers.find((user: any) => user._id === fromUserId);
         console.log('Users after fetch:', latestUsers);
         console.log('Request user:', requestUser);
   
@@ -88,7 +89,7 @@ const UserList = ({ currentUser, onSelectUser, socket, selectedUser }: Props) =>
       console.log('After', pendingRequests);
     });
 
-    socket.on('friendRequestAccepted', ({ userId }) => {
+    socket.on('friendRequestAccepted', ({ userId }: any) => {
         // Update the current user's friends list
         if (!currentUser) return;
     

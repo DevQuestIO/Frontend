@@ -119,3 +119,7 @@
   background: var(--accent-foreground);
   color: var(--accent);
 }
+
+body {
+  @apply bg-[#121212] text-[#e5e5e5] m-0 p-0 h-screen w-screen;
+}

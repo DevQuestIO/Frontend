@@ -11,9 +11,11 @@ interface User {
   isActive: boolean;
   friends: string[];
   pendingRequests: string[];
+  pendingSentRequests: string[];
+  pendingReceivedRequests: string[];
 }
 
-let socket: Socket;
+let socket: typeof Socket;
 
 const Chat = () => {
   const { session, status } = useSession();
@@ -57,10 +59,10 @@ const Chat = () => {
 
     socket.on('connect', () => {
       console.log('Connected to socket');
-      socket.emit('join', user.username);
+      socket?.emit('join', user.username);
     });
 
-    socket.on('connect_error', (error) => {
+    socket.on('connect_error', (error: any) => {
       console.error('Socket connection error:', error);
     });
   };

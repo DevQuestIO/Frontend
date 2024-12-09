@@ -21,7 +21,7 @@ interface Message {
 interface Props {
   currentUser: User | null;
   selectedUser: User;
-  socket: Socket;
+  socket: typeof Socket;
 }
 
 const ChatWindow = ({ currentUser, selectedUser, socket }: Props) => {

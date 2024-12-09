@@ -1,7 +1,4 @@
 /* Apply a global dark theme to the body */
-body {
-  @apply bg-[#121212] text-[#e5e5e5] m-0 p-0 h-screen w-screen;
-}
 
 /* Ensure the main container spans the entire screen */
 .container {
