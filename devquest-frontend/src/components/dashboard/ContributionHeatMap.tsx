@@ -37,7 +37,7 @@ const ContributionHeatmap = ({ submissions_by_date }: ContributionHeatmapProps) 
     let totalSubmissions = 0;
     const monthLabels: { month: string; startIndex: number; endIndex: number }[] = [];
     
-    let currentDate = new Date(oneYearAgo);
+    const currentDate = new Date(oneYearAgo);
   // currentDate.setDate(currentDate.getDate() + 1); // Subtract 1 day
 
     let lastMonth = -1;
@@ -46,7 +46,7 @@ const ContributionHeatmap = ({ submissions_by_date }: ContributionHeatmapProps) 
     let cnt = 0;
 
     while (currentDate <= today) {
-      let dayOfWeek = currentDate.getDay();
+      const dayOfWeek = currentDate.getDay();
       // dayOfWeek = dayOfWeek%7;
       const currentMonth = currentDate.getMonth();
       const dateStr = currentDate.toLocaleDateString('en-CA');

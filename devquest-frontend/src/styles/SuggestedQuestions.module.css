@@ -1,0 +1,62 @@
+/* Wrapper for the entire suggested questions drop-up box */
+.suggestedQuestionsWrapper {
+    @apply fixed bottom-0 right-4 w-80 bg-card shadow-lg rounded-t-lg z-50;
+  }
+  
+  /* Header: Always visible at the bottom */
+  .suggestedQuestionsHeader {
+    @apply flex justify-between items-center p-4 bg-primary text-primary-foreground cursor-pointer rounded-t-lg;
+    transition: background-color 0.3s ease;
+  }
+  
+  .suggestedQuestionsHeader:hover {
+    @apply bg-primary/90; /* Slightly darker on hover */
+  }
+  
+  /* Container for the sliding list */
+  .suggestedQuestionsContainer {
+    @apply bg-card overflow-hidden transition-all ease-in-out duration-300;
+    max-height: 0; /* Collapsed by default */
+  }
+  
+  /* Expanded state for the list */
+  .suggestedQuestionsContainer.expanded {
+    max-height: 48rem; /* Adjust the maximum height of the expanded container */
+  }
+  
+  /* List of suggested questions */
+  .suggestedQuestionsList {
+    @apply p-4 space-y-4 bg-muted text-muted-foreground max-h-96 overflow-y-auto;
+  }
+  
+  /* Individual question item */
+  .questionItem {
+    @apply flex justify-between items-center p-3 bg-card border border-border rounded-md shadow-sm hover:bg-muted/80;
+  }
+  
+  .questionTitle {
+    @apply font-semibold text-sm text-card-foreground;
+  }
+  
+  .questionDifficulty {
+    @apply px-2 py-1 text-xs rounded-md capitalize;
+  }
+  
+  /* Difficulty-specific styles */
+  .questionDifficulty.easy {
+    @apply bg-green-100 text-green-700;
+  }
+  
+  .questionDifficulty.medium {
+    @apply bg-yellow-100 text-yellow-700;
+  }
+  
+  .questionDifficulty.hard {
+    @apply bg-red-100 text-red-700;
+  }
+  
+  /* Toggle button styles */
+  .toggleIcon {
+    @apply text-xl text-primary-foreground;
+  }
+  
